@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "263563030149",
+    "project_id": "gharbhadad",
+    "storage_bucket": "gharbhadad.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:263563030149:android:0fe6f4f4d304f0207683ec",
+        "android_client_info": {
+          "package_name": "com.example.nepal_homerent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRN-7XvGu23L411_BjS_45pbX_GWxbzDo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
