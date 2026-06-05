@@ -89,21 +89,74 @@ Widget build(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedBuilder(
-              
-            )
-          ],
+              animation: _logoController,
+              builder: (_, child) => Opacity(
+                opacity:_logoOpacity.value,
+                child:Transform.scale(
+                   scale:_logoScale.value,
+                   child: child,
+                     ),
+                    ),
+                    child: Container(
+                      width: 100,
+                      height:100,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2)
+                blurRadius: 20,
+                offset: const Offset(0,8),
+              ),
+            ],
           ),
-         ))
-
-
-
-
-
-
-
+          child:const Icon(
+            Icons.home_rounded,
+            size: 56,
+            color: AppTheme.primaryRed,
+          ),
+        ),
       ),
-    )
-  )
+       const SizedBox(height: 24),
+                AnimatedBuilder(
+                  animation: _textController,
+                  builder: (_, child) => Opacity(
+                    opacity: _textOpacity.value,
+                    child: SlideTransition(
+                      position: _textSlide,
+                      child: child,
+          ),
+          ),
+          child: Column(children: [
+            const Text(
+             'घर ढुन्डो',
+             style:TextStyle(
+              fontSize: 36,
+              fontWeight: FontWeight.w800,
+              color:Colors.white,
+              letterSpacing: 1, 
+          ),
+        ),
+        const SizedBox(height: 8),
+                      Text(
+                        'नेपालको भरपर्दो घर खोज्ने ठाउँ',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.85),
+                          letterSpacing: 0.5,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 
