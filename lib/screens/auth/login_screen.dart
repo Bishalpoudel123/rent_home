@@ -14,6 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Welcome Back!',
+                  'पुन: स्वागत छ!',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Sign in to continue',
+                  'जारी राख्नको लागि लगइन गर्नुहोस्',
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -67,7 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          labelText: 'Email',
+                          labelText: 'इमेल',
+                          hintText: 'उदाहरण: name@email.com',
                           prefixIcon: Icon(Icons.email),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -75,10 +77,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'कृपया आफ्नो इमेल प्रविष्ट गर्नुहोस्';
                           }
                           if (!value.contains('@')) {
-                            return 'Please enter a valid email';
+                            return 'कृपया मान्य इमेल प्रविष्ट गर्नुहोस्';
                           }
                           return null;
                         },
@@ -88,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: 'पासवर्ड',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -106,15 +108,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
+                            return 'कृपया आफ्नो पासवर्ड प्रविष्ट गर्नुहोस्';
                           }
                           if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                            return 'पासवर्ड कम्तीमा ६ अक्षरको हुनुपर्छ';
                           }
                           return null;
                         },
                       ),
                     ],
+                  ),
+                ),
+                SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Forgot password
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('पासवर्ड रिसेट लिङ्क तपाईंको इमेलमा पठाइनेछ')),
+                      );
+                    },
+                    child: Text('पासवर्ड बिर्सनुभयो?', style: TextStyle(color: Colors.blue)),
                   ),
                 ),
                 SizedBox(height: 30),
@@ -133,7 +148,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       } else if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Login failed. Please check your credentials.')),
+                          SnackBar(
+                            content: Text('लगइन असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।'),
+                            backgroundColor: Colors.red,
+                          ),
                         );
                       }
                     }
@@ -147,26 +165,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : Text('Login', style: TextStyle(fontSize: 16)),
+                      : Text('लगइन', style: TextStyle(fontSize: 16)),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15),
+                    backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    // Forgot password functionality
-                  },
-                  child: Text('Forgot Password?'),
-                ),
                 SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Don't have an account? "),
+                    Text("खाता छैन? "),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
@@ -175,8 +187,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       child: Text(
-                        'Sign Up',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        'साइन अप गर्नुहोस्',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
                     ),
                   ],

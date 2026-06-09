@@ -8,10 +8,12 @@ import 'screens/splash_screen.dart';
 import 'utils/app_theme.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -22,12 +24,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
       ],
       child: MaterialApp(
-        title: 'RoomMate Finder',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        title: 'नेपाली होमरेन्ट',
         debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
+        theme: AppTheme.lightTheme,
+        home:  SplashScreen(),
       ),
     );
   }

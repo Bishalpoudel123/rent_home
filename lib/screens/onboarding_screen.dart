@@ -12,20 +12,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final List<OnboardingData> _pages = [
     OnboardingData(
-      title: 'Find Your Perfect Room',
-      description: 'Search thousands of rooms and apartments near you',
+      title: 'तपाईंको सही कोठा खोज्नुहोस्',
+      description: 'तपाईं नजिकका हजारौं कोठा र अपार्टमेन्टहरू खोज्नुहोस्',
       icon: Icons.search,
       color: Colors.blue,
     ),
     OnboardingData(
-      title: 'Connect with Roommates',
-      description: 'Find compatible roommates based on your preferences',
+      title: 'रूममेटसँग जोडिनुहोस्',
+      description: 'तपाईंको रुचि अनुसार उपयुक्त रूममेट खोज्नुहोस्',
       icon: Icons.people,
       color: Colors.purple,
     ),
     OnboardingData(
-      title: 'Easy Communication',
-      description: 'Chat directly with landlords and potential roommates',
+      title: 'सजिलो संचार',
+      description: 'घरधनी र सम्भावित रूममेटसँग प्रत्यक्ष कुराकानी गर्नुहोस्',
       icon: Icons.chat,
       color: Colors.green,
     ),
@@ -83,6 +83,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.black87,
             ),
             textAlign: TextAlign.center,
           ),
@@ -132,9 +133,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     curve: Curves.easeInOut,
                   );
                 },
-                child: Text('Next'),
+                child: Text('अर्को', style: TextStyle(fontSize: 16)),
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 15),
+                  side: BorderSide(color: Colors.blue),
                 ),
               ),
             ),
@@ -147,9 +149,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     MaterialPageRoute(builder: (_) => LoginScreen()),
                   );
                 },
-                child: Text('Get Started'),
+                child: Text('सुरु गर्नुहोस्', style: TextStyle(fontSize: 16)),
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 15),
+                  backgroundColor: Colors.blue,
                 ),
               ),
             ),

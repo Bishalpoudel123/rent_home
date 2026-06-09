@@ -4,21 +4,30 @@ import '../providers/property_provider.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/property_card.dart';
 import '../widgets/category_chip.dart';
+import '../models/property_model.dart';  // package: नभई relative path
 import 'property_detail_screen.dart';
 import 'search_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  final List<String> categories = ['All', 'Apartment', 'House', 'Shared', 'Studio'];
+  final List<String> categories = ['सबै', 'अपार्टमेन्ट', 'घर', 'साझा', 'स्टुडियो'];
   
   @override
   Widget build(BuildContext context) {
     final propertyProvider = Provider.of<PropertyProvider>(context);
     final authProvider = Provider.of<AuthProvider>(context);
     
+    final availableProperties = propertyProvider.properties
+        .where((p) => p.status == PropertyStatus.available)
+        .toList();
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text('Find Your Home'),
+        title: Text('तपाईंको घर खोज्नुहोस्',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         centerTitle: false,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -29,76 +38,134 @@ class HomeScreen extends StatelessWidget {
               );
             },
           ),
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.blue.shade100,
-            child: Text(
-              authProvider.currentUser?.name[0].toUpperCase() ?? 'U',
-              style: TextStyle(fontWeight: FontWeight.bold),
+          Container(
+            margin: EdgeInsets.only(right: 12),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: Colors.blue.shade100,
+              child: Text(
+                authProvider.currentUser?.name[0].toUpperCase() ?? 'यू',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue.shade700),
+              ),
             ),
           ),
-          SizedBox(width: 16),
         ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: EdgeInsets.all(16),
+          Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.blue.shade50, Colors.white],
+              ),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome back, ${authProvider.currentUser?.name ?? "User"}!',
+                  'नमस्ते, ${authProvider.currentUser?.name ?? "प्रिय प्रयोगकर्ता"}!',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade800,
                   ),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Find your perfect room today',
+                  'आजै आफ्नो सही कोठा खोज्नुहोस्',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
                   ),
                 ),
-                SizedBox(height: 20),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: categories.map((category) {
-                      return CategoryChip(label: category);
-                    }).toList(),
-                  ),
+              ],
+            ),
+          ),
+          
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 20, 16, 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'श्रेणीहरू',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: Text('सबै हेर्नुहोस्',
+                    style: TextStyle(color: Colors.blue, fontSize: 13)),
                 ),
               ],
             ),
           ),
+          
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.only(left: 16, bottom: 8),
+            child: Row(
+              children: categories.map((category) {
+                return CategoryChip(label: category);
+              }).toList(),
+            ),
+          ),
+          
           Expanded(
             child: propertyProvider.isLoading
-                ? Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: () => propertyProvider.fetchProperties(),
-                    child: ListView.builder(
-                      padding: EdgeInsets.all(16),
-                      itemCount: propertyProvider.properties.length,
-                      itemBuilder: (context, index) {
-                        final property = propertyProvider.properties[index];
-                        return PropertyCard(
-                          property: property,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => PropertyDetailScreen(propertyId: property.id),
-                              ),
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(color: Colors.blue),
+                        SizedBox(height: 16),
+                        Text('लोड हुँदैछ...', style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
+                  )
+                : availableProperties.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.home_work_outlined, size: 64, color: Colors.grey[400]),
+                            SizedBox(height: 16),
+                            Text(
+                              'हाल कुनै कोठा उपलब्ध छैन',
+                              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'नयाँ कोठा पोस्ट भएपछि तपाईंले यहाँ देख्नुहुनेछ',
+                              style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+                            ),
+                          ],
+                        ),
+                      )
+                    : RefreshIndicator(
+                        onRefresh: () => propertyProvider.fetchProperties(),
+                        child: ListView.builder(
+                          padding: EdgeInsets.all(12),
+                          itemCount: availableProperties.length,
+                          itemBuilder: (context, index) {
+                            final property = availableProperties[index];
+                            return PropertyCard(
+                              property: property,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PropertyDetailScreen(propertyId: property.id),
+                                  ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+                      ),
           ),
         ],
       ),

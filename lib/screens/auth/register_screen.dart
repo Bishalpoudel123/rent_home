@@ -48,7 +48,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Create Account',
+                  'नयाँ खाता बनाउनुहोस्',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -58,7 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  'Sign up to get started',
+                  'सुरु गर्नको लागि साइन अप गर्नुहोस्',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -73,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          labelText: 'Full Name',
+                          labelText: 'पुरा नाम',
                           prefixIcon: Icon(Icons.person),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -81,7 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your name';
+                            return 'कृपया आफ्नो नाम प्रविष्ट गर्नुहोस्';
                           }
                           return null;
                         },
@@ -90,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
-                          labelText: 'Email',
+                          labelText: 'इमेल',
                           prefixIcon: Icon(Icons.email),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -98,10 +98,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'कृपया आफ्नो इमेल प्रविष्ट गर्नुहोस्';
                           }
                           if (!value.contains('@')) {
-                            return 'Please enter a valid email';
+                            return 'कृपया मान्य इमेल प्रविष्ट गर्नुहोस्';
                           }
                           return null;
                         },
@@ -110,7 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextFormField(
                         controller: _phoneController,
                         decoration: InputDecoration(
-                          labelText: 'Phone Number',
+                          labelText: 'फोन नम्बर',
                           prefixIcon: Icon(Icons.phone),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -118,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your phone number';
+                            return 'कृपया आफ्नो फोन नम्बर प्रविष्ट गर्नुहोस्';
                           }
                           return null;
                         },
@@ -128,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _passwordController,
                         obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: 'पासवर्ड',
                           prefixIcon: Icon(Icons.lock),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -146,10 +146,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
+                            return 'कृपया आफ्नो पासवर्ड प्रविष्ट गर्नुहोस्';
                           }
                           if (value.length < 6) {
-                            return 'Password must be at least 6 characters';
+                            return 'पासवर्ड कम्तीमा ६ अक्षरको हुनुपर्छ';
                           }
                           return null;
                         },
@@ -159,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _confirmPasswordController,
                         obscureText: !_isConfirmPasswordVisible,
                         decoration: InputDecoration(
-                          labelText: 'Confirm Password',
+                          labelText: 'पासवर्ड पुष्टि गर्नुहोस्',
                           prefixIcon: Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -177,7 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (value) {
                           if (value != _passwordController.text) {
-                            return 'Passwords do not match';
+                            return 'पासवर्ड मिलेन! कृपया फेरि प्रविष्ट गर्नुहोस्';
                           }
                           return null;
                         },
@@ -194,9 +194,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             value: _selectedUserType,
                             isExpanded: true,
                             items: UserType.values.map((type) {
+                              String label = type == UserType.tenant ? 'भाडादाता (Tenant)' : 'घरधनी (Landlord)';
                               return DropdownMenuItem(
                                 value: type,
-                                child: Text(type.toString().split('.').last.toUpperCase()),
+                                child: Text(label),
                               );
                             }).toList(),
                             onChanged: (value) {
@@ -230,7 +231,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         );
                       } else if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Registration failed. Please try again.')),
+                          SnackBar(
+                            content: Text('रजिस्टर असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।'),
+                            backgroundColor: Colors.red,
+                          ),
                         );
                       }
                     }
@@ -244,9 +248,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
                         )
-                      : Text('Sign Up', style: TextStyle(fontSize: 16)),
+                      : Text('रजिस्टर गर्नुहोस्', style: TextStyle(fontSize: 16)),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 15),
+                    backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -256,7 +261,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Already have an account? "),
+                    Text("पहिले देखि खाता छ? "),
                     TextButton(
                       onPressed: () {
                         Navigator.pushReplacement(
@@ -265,8 +270,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         );
                       },
                       child: Text(
-                        'Sign In',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        'लगइन गर्नुहोस्',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
                       ),
                     ),
                   ],

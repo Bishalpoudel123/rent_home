@@ -17,7 +17,12 @@ class _CategoryChipState extends State<CategoryChip> {
     return Padding(
       padding: EdgeInsets.only(right: 8),
       child: FilterChip(
-        label: Text(widget.label),
+        label: Text(widget.label, 
+          style: TextStyle(
+            color: _isSelected ? Colors.white : Colors.black87,
+            fontWeight: _isSelected ? FontWeight.w600 : FontWeight.normal,
+          ),
+        ),
         selected: _isSelected,
         onSelected: (selected) {
           setState(() {
@@ -25,8 +30,11 @@ class _CategoryChipState extends State<CategoryChip> {
           });
         },
         backgroundColor: Colors.grey.shade200,
-        selectedColor: Colors.blue.shade100,
-        checkmarkColor: Colors.blue.shade700,
+        selectedColor: Colors.blue,
+        checkmarkColor: Colors.white,
+        elevation: 0,
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: StadiumBorder(),
       ),
     );
   }
