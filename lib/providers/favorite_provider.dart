@@ -1,23 +1,32 @@
-import 'package:flutter/foundation.dart';
-import '../models/property_model.dart';
+import 'package:flutter/material.dart';
 
 class FavoriteProvider extends ChangeNotifier {
-  final List<Property> _favorites = [];
+  List<String> _favoritePropertyIds = [];
 
-  List<Property> get favorites => _favorites;
+  List<String> get favoritePropertyIds => _favoritePropertyIds;
+  int get favoritesCount => _favoritePropertyIds.length;
 
-  bool isFavorite(String propertyId) {
-    return _favorites.any((p) => p.id == propertyId);
+  void addFavorite(String propertyId) {
+    if (!_favoritePropertyIds.contains(propertyId)) {
+      _favoritePropertyIds.add(propertyId);
+      notifyListeners();
+    }
   }
 
-  void toggleFavorite(Property property) {
-    if (isFavorite(property.id)) {
-      _favorites.removeWhere((p) => p.id == property.id);
-    } else {
-      _favorites.add(property);
-    }
+  void removeFavorite(String propertyId) {
+    _favoritePropertyIds.remove(propertyId);
     notifyListeners();
   }
 
-  int get count => _favorites.length;
+  bool isFavorite(String propertyId) {
+    return _favoritePropertyIds.contains(propertyId);
+  }
+
+  void toggleFavorite(String propertyId) {
+    if (isFavorite(propertyId)) {
+      removeFavorite(propertyId);
+    } else {
+      addFavorite(propertyId);
+    }
+  }
 }

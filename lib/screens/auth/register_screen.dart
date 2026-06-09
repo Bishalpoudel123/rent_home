@@ -1,226 +1,291 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/user_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../utils/app_theme.dart';
+import '../../models/user_model.dart';
+import 'login_screen.dart';
 import '../main_navigation.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
-
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  _RegisterScreenState createState() => _RegisterScreenState();
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _nameCtrl = TextEditingController();
-  final _emailCtrl = TextEditingController();
-  final _phoneCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
-  bool _obscure = true;
-  UserRole _selectedRole = UserRole.tenant;
   final _formKey = GlobalKey<FormState>();
-
-  Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) return;
-    final auth = context.read<AuthProvider>();
-    final success = await auth.register(
-      name: _nameCtrl.text,
-      email: _emailCtrl.text,
-      phone: _phoneCtrl.text,
-      password: _passCtrl.text,
-      role: _selectedRole,
-    );
-    if (success && mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const MainNavigation()),
-        (route) => false,
-      );
-    }
-  }
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  UserType _selectedUserType = UserType.tenant;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
+    final authProvider = Provider.of<AuthProvider>(context);
+    
     return Scaffold(
-      appBar: AppBar(title: const Text('नयाँ खाता')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'खाता खोल्नुहोस्',
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: AppTheme.textDark),
-              ),
-              const SizedBox(height: 8),
-              const Text('सबै जानकारी सही भर्नुहोस्',
-                  style: TextStyle(color: AppTheme.textGrey)),
-              const SizedBox(height: 32),
-
-              // Role selection
-              const Text('म के हुँ?',
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue.shade50, Colors.white],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 30),
+                Icon(
+                  Icons.person_add,
+                  size: 60,
+                  color: Colors.blue.shade700,
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Create Account',
                   style: TextStyle(
-                      fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _RoleChip(
-                    label: 'किरायामा लिनेले',
-                    icon: Icons.person,
-                    selected: _selectedRole == UserRole.tenant,
-                    onTap: () => setState(() => _selectedRole = UserRole.tenant),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue.shade800,
                   ),
-                  const SizedBox(width: 12),
-                  _RoleChip(
-                    label: 'घर मालिक',
-                    icon: Icons.house,
-                    selected: _selectedRole == UserRole.landlord,
-                    onTap: () =>
-                        setState(() => _selectedRole = UserRole.landlord),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              _buildField('पूरा नाम', _nameCtrl, Icons.person_outline,
-                  'नाम राख्नुहोस्', false),
-              const SizedBox(height: 16),
-              _buildField('इमेल', _emailCtrl, Icons.email_outlined,
-                  'email@example.com', false,
-                  type: TextInputType.emailAddress),
-              const SizedBox(height: 16),
-              _buildField('मोबाइल नम्बर', _phoneCtrl, Icons.phone_outlined,
-                  '98XXXXXXXX', false,
-                  type: TextInputType.phone),
-              const SizedBox(height: 16),
-
-              const Text('पासवर्ड',
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Sign up to get started',
                   style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textDark,
-                      fontSize: 14)),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: _passCtrl,
-                obscureText: _obscure,
-                decoration: InputDecoration(
-                  hintText: '••••••••',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon:
-                        Icon(_obscure ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _obscure = !_obscure),
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 30),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Full Name',
+                          prefixIcon: Icon(Icons.person),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your name';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!value.contains('@')) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                          labelText: 'Phone Number',
+                          prefixIcon: Icon(Icons.phone),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        decoration: InputDecoration(
+                          labelText: 'Password',
+                          prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          if (value.length < 6) {
+                            return 'Password must be at least 6 characters';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: !_isConfirmPasswordVisible,
+                        decoration: InputDecoration(
+                          labelText: 'Confirm Password',
+                          prefixIcon: Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              });
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value != _passwordController.text) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<UserType>(
+                            value: _selectedUserType,
+                            isExpanded: true,
+                            items: UserType.values.map((type) {
+                              return DropdownMenuItem(
+                                value: type,
+                                child: Text(type.toString().split('.').last.toUpperCase()),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedUserType = value;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                validator: (v) =>
-                    v!.length < 6 ? 'कम्तिमा ६ अक्षर चाहिन्छ' : null,
-              ),
-              const SizedBox(height: 32),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: auth.isLoading ? null : _register,
-                  child: auth.isLoading
-                      ? const SizedBox(
+                SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: authProvider.isLoading ? null : () async {
+                    if (_formKey.currentState!.validate()) {
+                      bool success = await authProvider.register(
+                        _nameController.text,
+                        _emailController.text,
+                        _passwordController.text,
+                        _selectedUserType,
+                      );
+                      
+                      if (success && mounted) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => MainNavigationScreen()),
+                        );
+                      } else if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Registration failed. Please try again.')),
+                        );
+                      }
+                    }
+                  },
+                  child: authProvider.isLoading
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                              color: Colors.white, strokeWidth: 2))
-                      : const Text('दर्ता गर्नुहोस्'),
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text('Sign Up', style: TextStyle(fontSize: 16)),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildField(String label, TextEditingController controller,
-      IconData icon, String hint, bool obscure,
-      {TextInputType type = TextInputType.text}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textDark,
-                fontSize: 14)),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          obscureText: obscure,
-          keyboardType: type,
-          decoration: InputDecoration(
-            hintText: hint,
-            prefixIcon: Icon(icon),
-          ),
-          validator: (v) => v!.isEmpty ? '$label राख्नुहोस्' : null,
-        ),
-      ],
-    );
-  }
-}
-
-class _RoleChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _RoleChip(
-      {required this.label,
-      required this.icon,
-      required this.selected,
-      required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppTheme.primaryRed.withOpacity(0.1)
-                : const Color(0xFFF3F4F6),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: selected ? AppTheme.primaryRed : Colors.transparent,
-              width: 1.5,
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Already have an account? "),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => LoginScreen()),
+                        );
+                      },
+                      child: Text(
+                        'Sign In',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          child: Column(
-            children: [
-              Icon(icon,
-                  color:
-                      selected ? AppTheme.primaryRed : AppTheme.textGrey),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color:
-                      selected ? AppTheme.primaryRed : AppTheme.textGrey,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
   }
 }

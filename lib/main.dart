@@ -1,39 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:nepal_rent_app/screens/favorites_screen.dart';
-import 'package:nepal_rent_app/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/property_provider.dart';
+import 'providers/chat_provider.dart';
+import 'providers/favorite_provider.dart';
+import 'screens/splash_screen.dart';
+import 'utils/app_theme.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  runApp(const KothakhojApp());
+  runApp(MyApp());
 }
 
-
-
-
-
-
-
-class KothakhojApp extends StatelessWidget {
-  const KothakhojApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => PropertyProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
-           ChangeNotifierProvider(create: (_) => chatProvider()),
       ],
       child: MaterialApp(
-        title: 'कोठा खोज - Nepal',
+        title: 'RoomMate Finder',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightThem,
-        home:const SplashScreen(),
+        home: SplashScreen(),
       ),
-  );
+    );
   }
 }
