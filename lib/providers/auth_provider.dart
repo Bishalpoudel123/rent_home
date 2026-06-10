@@ -1,26 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:nepal_rent_app/services/firebase_auth_service.dart';
 import '../models/user_model.dart';
-import '../services/firebase_auth_service.dart';
+//import '../services/firebase_service.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final FirebaseAuthService _authService = FirebaseAuthService();
   UserModel? _currentUser;
   bool _isLoading = false;
+  String? _errorMessage;
 
   UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _currentUser != null;
+  String? get errorMessage => _errorMessage;
 
-  Future<bool> login(String email, String password) async {
+  // ✅ Register - Firebase मा save गर्ने
+  Future<bool> register({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+    required UserType userType,
+  }) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
     
     try {
-      _currentUser = await _authService.login(email, password);
-      notifyListeners();
-      return true;
+      final userTypeString = userType == UserType.tenant ? 'tenant' : 'landlord';
+      
+      _currentUser = await FirebaseService.registerUser(
+        name: name,
+        email: email,
+        phone: phone,
+        userType: userTypeString,
+      );
+      
+      if (_currentUser != null) {
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = 'रजिस्टर असफल भयो';
+        return false;
+      }
     } catch (e) {
-      debugPrint('Login error: $e');
+      _errorMessage = 'Error: $e';
       return false;
     } finally {
       _isLoading = false;
@@ -28,16 +51,28 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> register(String name, String email, String password, UserType userType) async {
+  // ✅ Login (सजिलोको लागि mock)
+  Future<bool> login(String email, String password) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
     
     try {
-      _currentUser = await _authService.register(name, email, password, userType);
+      await Future.delayed(Duration(seconds: 1));
+      
+      _currentUser = UserModel(
+        id: 'temp_user',
+        name: email.split('@')[0],
+        email: email,
+        phone: '9800000000',
+        userType: UserType.tenant,
+        createdAt: DateTime.now(),
+      );
+      
       notifyListeners();
       return true;
     } catch (e) {
-      debugPrint('Registration error: $e');
+      _errorMessage = 'लगइन असफल भयो';
       return false;
     } finally {
       _isLoading = false;
@@ -49,10 +84,15 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    await _authService.logout();
+    await Future.delayed(Duration(milliseconds: 500));
     _currentUser = null;
     
     _isLoading = false;
+    notifyListeners();
+  }
+  
+  void clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
 }

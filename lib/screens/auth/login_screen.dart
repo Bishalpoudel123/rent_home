@@ -14,7 +14,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +60,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 50),
+                
+                // Error message
+                if (authProvider.errorMessage != null)
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red, size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            authProvider.errorMessage!,
+                            style: TextStyle(color: Colors.red, fontSize: 13),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => authProvider.clearError(),
+                          child: Icon(Icons.close, size: 16, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
+                
                 Form(
                   key: _formKey,
                   child: Column(
@@ -69,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         decoration: InputDecoration(
                           labelText: 'इमेल',
-                          hintText: 'उदाहरण: name@email.com',
+                          hintText: 'example@gmail.com',
                           prefixIcon: Icon(Icons.email),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -78,9 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'कृपया आफ्नो इमेल प्रविष्ट गर्नुहोस्';
-                          }
-                          if (!value.contains('@')) {
-                            return 'कृपया मान्य इमेल प्रविष्ट गर्नुहोस्';
                           }
                           return null;
                         },
@@ -110,9 +135,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (value == null || value.isEmpty) {
                             return 'कृपया आफ्नो पासवर्ड प्रविष्ट गर्नुहोस्';
                           }
-                          if (value.length < 6) {
-                            return 'पासवर्ड कम्तीमा ६ अक्षरको हुनुपर्छ';
-                          }
                           return null;
                         },
                       ),
@@ -124,7 +146,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      // Forgot password
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('पासवर्ड रिसेट लिङ्क तपाईंको इमेलमा पठाइनेछ')),
                       );
@@ -145,13 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => MainNavigationScreen()),
-                        );
-                      } else if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('लगइन असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।'),
-                            backgroundColor: Colors.red,
-                          ),
                         );
                       }
                     }
@@ -192,6 +206,34 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
+                ),
+                
+                SizedBox(height: 20),
+                // Demo credentials
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        'परीक्षणको लागि:',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'कुनै पनि इमेल र पासवर्डले काम गर्छ',
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'उदाहरण: test@gmail.com / 123456',
+                        style: TextStyle(fontSize: 11, color: Colors.blue),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

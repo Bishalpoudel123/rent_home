@@ -1,4 +1,4 @@
-class MapsService {
+  class MapsService {
   Future<String> getAddressFromCoordinates(double lat, double lng) async {
     await Future.delayed(Duration(milliseconds: 500));
     return "123 Main Street, City, State 12345";

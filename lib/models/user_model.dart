@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+enum UserType { tenant, landlord }
+
 class UserModel {
   final String id;
   final String name;
   final String email;
   final String phone;
-  final String? profileImage;
   final UserType userType;
   final DateTime createdAt;
 
@@ -12,32 +15,36 @@ class UserModel {
     required this.name,
     required this.email,
     required this.phone,
-    this.profileImage,
     required this.userType,
     required this.createdAt,
   });
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'email': email,
-    'phone': phone,
-    'profileImage': profileImage,
-    'userType': userType.toString().split('.').last,
-    'createdAt': createdAt.toIso8601String(),
-  };
+  // Firestore मा save गर्न
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'userType': userType.name,          // 'tenant' or 'landlord'
+      'createdAt': Timestamp.fromDate(createdAt),
+    };
+  }
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-    id: json['id'],
-    name: json['name'],
-    email: json['email'],
-    phone: json['phone'],
-    profileImage: json['profileImage'],
-    userType: UserType.values.firstWhere(
-      (e) => e.toString().split('.').last == json['userType']
-    ),
-    createdAt: DateTime.parse(json['createdAt']),
-  );
+  // Firestore बाट read गर्न
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'] ?? '',
+      name: map['name'] ?? '',
+      email: map['email'] ?? '',
+      phone: map['phone'] ?? '',
+      userType: UserType.values.firstWhere(
+        (e) => e.name == map['userType'],
+        orElse: () => UserType.tenant,
+      ),
+      createdAt: map['createdAt'] is Timestamp
+          ? (map['createdAt'] as Timestamp).toDate()
+          : DateTime.now(),
+    );
+  }
 }
-
-enum UserType { tenant, landlord, admin }

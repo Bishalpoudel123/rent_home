@@ -66,6 +66,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 30),
+                
+                // Error message
+                if (authProvider.errorMessage != null)
+                  Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    padding: EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error, color: Colors.red, size: 20),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            authProvider.errorMessage!,
+                            style: TextStyle(color: Colors.red, fontSize: 13),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => authProvider.clearError(),
+                          child: Icon(Icons.close, size: 16, color: Colors.red),
+                        ),
+                      ],
+                    ),
+                  ),
+                
                 Form(
                   key: _formKey,
                   child: Column(
@@ -91,6 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         controller: _emailController,
                         decoration: InputDecoration(
                           labelText: 'इमेल',
+                          hintText: 'example@gmail.com',
                           prefixIcon: Icon(Icons.email),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -194,7 +224,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             value: _selectedUserType,
                             isExpanded: true,
                             items: UserType.values.map((type) {
-                              String label = type == UserType.tenant ? 'भाडादाता (Tenant)' : 'घरधनी (Landlord)';
+                              String label = type == UserType.tenant 
+                                  ? 'भाडादाता (कोठा खोज्दै)'
+                                  : 'घरधनी (कोठा दिने)';
                               return DropdownMenuItem(
                                 value: type,
                                 child: Text(label),
@@ -218,23 +250,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onPressed: authProvider.isLoading ? null : () async {
                     if (_formKey.currentState!.validate()) {
                       bool success = await authProvider.register(
-                        _nameController.text,
-                        _emailController.text,
-                        _passwordController.text,
-                        _selectedUserType,
+                        name: _nameController.text,
+                        email: _emailController.text,
+                        password: _passwordController.text,
+                        phone: _phoneController.text,
+                        userType: _selectedUserType,
                       );
                       
                       if (success && mounted) {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (_) => MainNavigationScreen()),
-                        );
-                      } else if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('रजिस्टर असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।'),
-                            backgroundColor: Colors.red,
-                          ),
                         );
                       }
                     }
