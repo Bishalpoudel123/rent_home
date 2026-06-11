@@ -14,6 +14,11 @@ class PropertyModel {
   final String landlordId;
   final PropertyStatus status;
   final DateTime createdAt;
+  
+  // ✅ Owner को सम्पर्क जानकारी (यी फिल्डहरू थप्नुहोस्)
+  final String ownerName;
+  final String ownerPhone;
+  final String ownerEmail;
 
   PropertyModel({
     required this.id,
@@ -31,6 +36,9 @@ class PropertyModel {
     required this.landlordId,
     required this.status,
     required this.createdAt,
+    required this.ownerName,      // ✅ थप्नुहोस्
+    required this.ownerPhone,     // ✅ थप्नुहोस्
+    required this.ownerEmail,     // ✅ थप्नुहोस्
   });
 
   Map<String, dynamic> toJson() => {
@@ -49,6 +57,9 @@ class PropertyModel {
     'landlordId': landlordId,
     'status': status.toString().split('.').last,
     'createdAt': createdAt.toIso8601String(),
+    'ownerName': ownerName,      // ✅ थप्नुहोस्
+    'ownerPhone': ownerPhone,    // ✅ थप्नुहोस्
+    'ownerEmail': ownerEmail,    // ✅ थप्नुहोस्
   };
 
   factory PropertyModel.fromJson(Map<String, dynamic> json) => PropertyModel(
@@ -69,6 +80,9 @@ class PropertyModel {
       (e) => e.toString().split('.').last == json['status']
     ),
     createdAt: DateTime.parse(json['createdAt']),
+    ownerName: json['ownerName'] ?? '',      // ✅ थप्नुहोस्
+    ownerPhone: json['ownerPhone'] ?? '',    // ✅ थप्नुहोस्
+    ownerEmail: json['ownerEmail'] ?? '',    // ✅ थप्नुहोस्
   );
 }
 

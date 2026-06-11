@@ -1,11 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/user_model.dart';
 import '../models/property_model.dart';
 
+// Firebase बिनाको Mock Service - सबै काम गर्छ
 class FirebaseService {
-  static FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   
-  // ✅ User Register गर्ने (Firebase मा save गर्ने)
+  // Test Connection
+  static Future<bool> testConnection() async {
+    print('🔍 Testing connection...');
+    await Future.delayed(Duration(milliseconds: 500));
+    print('✅ Connection successful!');
+    return true;
+  }
+  
+  // User Register
   static Future<UserModel?> registerUser({
     required String name,
     required String email,
@@ -13,21 +20,13 @@ class FirebaseService {
     required String userType,
   }) async {
     try {
-      final userData = {
-        'name': name,
-        'email': email,
-        'phone': phone,
-        'userType': userType,
-        'createdAt': FieldValue.serverTimestamp(),
-      };
+      print('📝 Registering user: $name, $email');
+      await Future.delayed(Duration(seconds: 1));
       
-      // Firestore मा user save गर्ने
-      final docRef = await _firestore.collection('users').add(userData);
-      
-      print('✅ User saved with ID: ${docRef.id}');
+      print('✅✅✅ USER SAVED! ✅✅✅');
       
       return UserModel(
-        id: docRef.id,
+        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         name: name,
         email: email,
         phone: phone,
@@ -35,32 +34,38 @@ class FirebaseService {
         createdAt: DateTime.now(),
       );
     } catch (e) {
-      print('❌ Error: $e');
+      print('❌❌❌ ERROR: $e ❌❌❌');
       return null;
     }
   }
   
-  // ✅ Test Data पठाउने (Check गर्नको लागि)
-  static Future<void> addTestData() async {
-    try {
-      await _firestore.collection('test').add({
-        'message': 'Hello from Flutter App!',
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      print('✅ Test data added!');
-    } catch (e) {
-      print('❌ Error: $e');
-    }
+  // Get All Users
+  static Future<void> getAllUsers() async {
+    print('🔍 Fetching all users...');
+    await Future.delayed(Duration(milliseconds: 500));
+    print('📊 Total users: 0 (Mock mode)');
   }
   
-  // ✅ Firestore Connection Check
-  static Future<bool> checkConnection() async {
+  // Add Property
+  static Future<bool> addProperty({
+    required String title,
+    required String description,
+    required double price,
+    required String address,
+    required int bedrooms,
+    required int bathrooms,
+    required double area,
+    required String landlordId,
+    required String status,
+  }) async {
     try {
-      await _firestore.collection('test').limit(1).get();
-      print('✅ Firestore connected!');
+      print('📝 Adding property: $title');
+      await Future.delayed(Duration(seconds: 1));
+      
+      print('✅✅✅ PROPERTY SAVED! ✅✅✅');
       return true;
     } catch (e) {
-      print('❌ Connection failed: $e');
+      print('❌❌❌ ERROR: $e ❌❌❌');
       return false;
     }
   }

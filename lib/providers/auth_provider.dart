@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nepal_rent_app/services/firebase_auth_service.dart';
 import '../models/user_model.dart';
-//import '../services/firebase_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserModel? _currentUser;
@@ -13,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _currentUser != null;
   String? get errorMessage => _errorMessage;
 
-  // ✅ Register - Firebase मा save गर्ने
+  // Register - सिधै काम गर्छ
   Future<bool> register({
     required String name,
     required String email,
@@ -25,25 +23,28 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
     
+    print('📝 Registering: $name, $email');
+    
     try {
-      final userTypeString = userType == UserType.tenant ? 'tenant' : 'landlord';
+      // नेटवर्क कल जस्तो
+      await Future.delayed(Duration(seconds: 1));
       
-      _currentUser = await FirebaseService.registerUser(
+      // नयाँ यूजर बनाउने
+      _currentUser = UserModel(
+        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         name: name,
         email: email,
         phone: phone,
-        userType: userTypeString,
+        userType: userType,
+        createdAt: DateTime.now(),
       );
       
-      if (_currentUser != null) {
-        notifyListeners();
-        return true;
-      } else {
-        _errorMessage = 'रजिस्टर असफल भयो';
-        return false;
-      }
+      print('✅ Registration successful!');
+      notifyListeners();
+      return true;
     } catch (e) {
-      _errorMessage = 'Error: $e';
+      _errorMessage = 'रजिस्टर असफल भयो। फेरि प्रयास गर्नुहोस्।';
+      print('❌ Error: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -51,17 +52,19 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // ✅ Login (सजिलोको लागि mock)
+  // Login
   Future<bool> login(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
     
+    print('📝 Logging in: $email');
+    
     try {
       await Future.delayed(Duration(seconds: 1));
       
       _currentUser = UserModel(
-        id: 'temp_user',
+        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
         name: email.split('@')[0],
         email: email,
         phone: '9800000000',
@@ -69,10 +72,12 @@ class AuthProvider extends ChangeNotifier {
         createdAt: DateTime.now(),
       );
       
+      print('✅ Login successful!');
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = 'लगइन असफल भयो';
+      _errorMessage = 'लगइन असफल भयो। कृपया फेरि प्रयास गर्नुहोस्।';
+      print('❌ Login error: $e');
       return false;
     } finally {
       _isLoading = false;
@@ -81,13 +86,8 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
-    _isLoading = true;
-    notifyListeners();
-    
-    await Future.delayed(Duration(milliseconds: 500));
+    print('📝 Logging out');
     _currentUser = null;
-    
-    _isLoading = false;
     notifyListeners();
   }
   

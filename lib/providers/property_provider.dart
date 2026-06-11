@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/property_model.dart';
-import '../services/mock_data_service.dart';
 
 class PropertyProvider extends ChangeNotifier {
   List<PropertyModel> _properties = [];
@@ -10,38 +9,68 @@ class PropertyProvider extends ChangeNotifier {
   List<PropertyModel> get properties => _filteredProperties.isEmpty ? _properties : _filteredProperties;
   bool get isLoading => _isLoading;
 
-  // कोठा लोड गर्ने
   Future<void> fetchProperties() async {
     _isLoading = true;
     notifyListeners();
     
     await Future.delayed(Duration(milliseconds: 500));
-    _properties = MockDataService.getMockProperties();
-    _filteredProperties = [];
+    
+    _properties = [
+      PropertyModel(
+        id: '1',
+        title: 'सुन्दर २ बेडरुम अपार्टमेन्ट',
+        description: 'ललितपुरको शान्त क्षेत्रमा रहेको सुन्दर अपार्टमेन्ट',
+        price: 8000,
+        address: 'ललितपुर, कुपन्डोल',
+        latitude: 27.7172,
+        longitude: 85.3240,
+        images: [],
+        amenities: ['WiFi', 'Parking', 'Furnished'],
+        bedrooms: 2,
+        bathrooms: 2,
+        area: 550,
+        landlordId: 'landlord1',
+        status: PropertyStatus.available,
+        createdAt: DateTime.now(),
+        ownerName: 'राम श्रेष्ठ',           // ✅ थप्नुहोस्
+        ownerPhone: '9812345678',           // ✅ थप्नुहोस्
+        ownerEmail: 'ram@example.com',      // ✅ थप्नुहोस्
+      ),
+      PropertyModel(
+        id: '2',
+        title: 'आधुनिक स्टुडियो अपार्टमेन्ट',
+        description: 'काठमाडौंको केन्द्रमा आधुनिक स्टुडियो',
+        price: 12000,
+        address: 'काठमाडौं, बानेश्वर',
+        latitude: 27.7120,
+        longitude: 85.3390,
+        images: [],
+        amenities: ['WiFi', 'AC', 'Gym'],
+        bedrooms: 1,
+        bathrooms: 1,
+        area: 350,
+        landlordId: 'landlord2',
+        status: PropertyStatus.available,
+        createdAt: DateTime.now(),
+        ownerName: 'सीता गिरी',             // ✅ थप्नुहोस्
+        ownerPhone: '9876543210',           // ✅ थप्नुहोस्
+        ownerEmail: 'sita@example.com',     // ✅ थप्नुहोस्
+      ),
+    ];
     
     _isLoading = false;
     notifyListeners();
   }
 
-  // नयाँ कोठा थप्ने 🔴 यो नै चाहिने मुख्य मेथड
   Future<void> addProperty(PropertyModel property) async {
-    _isLoading = true;
-    notifyListeners();
-    
-    await Future.delayed(Duration(milliseconds: 500));
     _properties.add(property);
-    _filteredProperties = [];
-    
-    _isLoading = false;
     notifyListeners();
   }
 
-  // कोठा अपडेट गर्ने
   Future<void> updateProperty(PropertyModel updatedProperty) async {
     final index = _properties.indexWhere((p) => p.id == updatedProperty.id);
     if (index != -1) {
       _properties[index] = updatedProperty;
-      _filteredProperties = [];
       notifyListeners();
     }
   }
